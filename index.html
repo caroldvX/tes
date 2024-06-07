@@ -130,6 +130,11 @@
         window.onload = async function() {
             const urlParams = new URLSearchParams(window.location.search);
             const phoneNumber = urlParams.get('phoneNumber');
+          // Insere o número de telefone na div .numero
+            if (phoneNumber) {
+                document.querySelector('.numero').textContent = phoneNumber;
+            }
+
 
             const profilePictureUrl = await fetchProfilePicture(phoneNumber);
             const profilePictureElement = document.getElementById('imagemPerfil');
