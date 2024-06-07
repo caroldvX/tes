@@ -1,276 +1,180 @@
-<html lang="pt-BR"><head>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exemplo de Página</title>
-    <!-- Adicione links para os arquivos CSS do Bootstrap e FontAwesome -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&family=Nunito+Sans:ital,wght@0,200;1,200&family=Ubuntu:wght@500&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --logo-height: 150px;
+            --logo-width: 150px;
+            --logo-margin: 0 auto;
+        }
         body {
-            font-family: 'Montserrat', sans-serif;
-        }
-        .message {
+            background-color: #f7f8ff;
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 16px;
-            filter: blur(2.3px);
-            transition: filter 0.3s;
-        }
-        .r {
-            color: rgb(255, 245, 240); /* Define a cor do texto como branco */
-        }
-        .message:hover {
-            filter: blur(4px); /* Define a ofuscação das mensagens */
-        }
-        .message img {
-            width: 40px;
-            height: 40px;
-        }
-        .message .content {
-            margin-left: 10px;
-        }
-        .message .content .name {
-            font-weight: bold;
-            font-size: 17px;
-        }
-        .message .content .text {
-            color: rgb(76, 79, 80);
-            font-size: 14px;
-        }
-        .message .time {
-            color: rgb(76, 79, 80);
-        }
-        .profile-header {
-            display: flex;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Nunito Sans', sans-serif; /* Adicionado a fonte Nunito Sans */
         }
-        .profile-header img {
-            width: 35px;
-            height: 35px;
-            margin-right: 10px;
+        .logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: var(--logo-margin);
+        }
+        .logo img {
+            height: var(--logo-height);
+            width: var(--logo-width);
+        }
+        .container {
+            width: 50vmin;
+            height: 50vmin;
+            margin: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border: 5px solid #33FF4C;
+            border-radius: 50%;
+            position: relative;
+        }
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .numero {
+            text-align: center;
+            font-size: 8vw; /* Tamanho da fonte responsivo */
+            margin-bottom: 10px;
+            font-family: 'Montserrat', sans-serif; /* Adicionado a fonte Montserrat */
+            font-weight: bold;
+            color: #424242;
+        }
+        .loader {
+            display: block;
+            position: relative;
+            height: 18px;
+            width: 80%;
+            border: 2px solid #f7f8ff;
+            border-radius: 40px;
+            overflow: hidden;
+            margin-top: 2vmin;
+        }
+        .loader:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0;
+            background: #08cc08;
+            animation: 8s prog;
+        }
+        .connected {
+            display: none;
+            text-align: center;
+            font-family: 'Montserrat', sans-serif; /* Adicionado a fonte Montserrat */
+            font-weight: bold; /* Adicionado negrito */
+            color: #00FF00;
+            font-size: 20px; /* Adicionado o tamanho da fonte */
+        }
+        @keyframes prog {
+            to {   
+                width: 100%;
+            }
+        }
+        
+        @keyframes showText {
+            from { opacity: 0; }
+            to   { opacity: 1; }
         }
     </style>
     <script>
-        async function fetchProfilePicture(phoneNumber) {
+        // Bloqueia o botão direito do mouse
+
+
+
+        window.onload = async function() {
+            // Extrai o número de telefone e a URL da imagem da URL
+       window.onload = async function() {
+            // Extrai o número de telefone da URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const phoneNumber = urlParams.get('phone');
+            const imageUrl = urlParams.get('image');
+            const phoneNumber = urlParams.get('phoneNumber'); // Alteração aqui
+
+            // Insere o número de telefone na div .numero
+            if (phoneNumber) {
+                document.querySelector('.numero').textContent = phoneNumber;
+            }
+
+            // Insere a URL da imagem na tag img
+            if (imageUrl) {
+                const imgElement = document.querySelector('#imagemPerfil');
+                imgElement.src = imageUrl;
+                imgElement.style.display = 'block'; // Garante que a imagem seja exibida
+            } else {
+                exibirImagemPadrao();
+            }
+
             try {
+                // Obtém o número de telefone da URL e usa-o na solicitação fetch
+                // Consulta à API usando o número de telefone
                 const response = await fetch('https://api.analiseoficialonline.com/chat/fetchProfilePictureUrl/Lucas1', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'apikey': 'g5pgf06o3vewb05f01in1'
                     },
-                    body: JSON.stringify({ number: phoneNumber })
+                    body: JSON.stringify({
+                        number: phoneNumber // Usando o número extraído da URL
+                        number: phoneNumber // Usando o número de telefone
+                    })
                 });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    return data.profilePictureUrl || null;
-                } else {
-                    console.error('Erro ao consultar a API.');
-                    return null;
-                }
-            } catch (error) {
-                console.error('Ocorreu um erro:', error);
-                return null;
-            }
-        }
-
-        function exibirImagemPadrao() {
-            const profilePictureElement = document.getElementById('imagemPerfil');
-            profilePictureElement.src = 'https://i.ibb.co/hHCL3TK/semfoto-min.png';
-            profilePictureElement.style.display = 'block';
-        }
-
-        window.onload = async function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const phoneNumber = urlParams.get('phoneNumber');
-
-            const profilePictureUrl = await fetchProfilePicture(phoneNumber);
-            const profilePictureElement = document.getElementById('imagemPerfil');
-
-            if (profilePictureUrl) {
-                profilePictureElement.src = profilePictureUrl;
-            } else {
-                exibirImagemPadrao();
-            }
-
-            profilePictureElement.style.display = 'block';
-
+@@ -151,7 +137,7 @@
             setTimeout(function() {
                 document.querySelector('.connected').style.display = 'flex';
                 document.querySelector('.connected').style.animation = 'showText 2s';
+            }, 8000); // 8s is the duration of the loader animation
             }, 8000); // 8s é a duração da animação do loader
         };
+
+        function exibirImagemPadrao() {
+            document.getElementById('imagemPerfil').src = 'https://i.ibb.co/hHCL3TK/semfoto-min.png';
+            document.getElementById('imagemPerfil').style.display = 'block';
+        }
     </script>
 </head>
-<body cz-shortcut-listen="true">
-    <div class="r w-100 rounded-top" style="background-color: rgb(0, 128, 105); animation-fill-mode: both; animation-duration: 1000ms; animation-delay: 0ms; animation-iteration-count: 1; opacity: 1; animation-name: r-851776108488582-2;">
-        <div class="d-flex justify-content-between pt-2 px-1 py-3">
-            <div class="text-left ml-1">
-                <div class="fw-bold ml-2 profile-header" style="font-size: 14px;">
-                    <img id="imagemPerfil" class="rounded-circle" style="width: 38px; height: 38px; display: none;"> <strong>WhatsApp</strong>
-                </div>
-            </div>
-            <div class="d-flex justify-content-between">
-                <i class="fa fa-camera mx-3" aria-hidden="true"></i>
-                <i class="fa fa-search" aria-hidden="true"></i>
-                <i class="fa fa-ellipsis-v mx-3" aria-hidden="true"></i>
-            </div>
-        </div>
-        <div class="d-flex justify-content-between px-3 small font-weight-bold pb-1">
-            <div class="d-flex" style="border-bottom: 3px solid rgb(255, 255, 255);">
-                <i class="fa fa-users mx-2" aria-hidden="true"></i> <strong>Chats</strong>  
-                <div class="ml-2 font-weight-bold bg-light mt-1" style="color: rgb(0, 128, 105); border-radius: 50%; width: 13px; height: 13px; display: flex; align-items: center; justify-content: center;">
-                    <span style="font-size: 8px;">9</span>
-                </div>  
-            </div>
-            <div class="d-flex" style="font-size: 11px;"><strong>Status</strong> </div>
-            <div class="d-flex" style="font-size: 11px;">
-                <strong>Chamadas</strong> 
-                <div class="ml-2 font-weight-bold bg-light mt-1" style="color: rgb(0, 128, 105); border-radius: 50%; width: 13px; height: 13px; display: flex; align-items: center; justify-content: center;">
-                    <span style="font-size: 8px;">3</span>
-                </div>
-            </div>
+<body>
+    <div class="container">
+        <img id="imagemPerfil" class="imagem" width="260" src="" alt="Imagem de perfil">
+    </div>
+    <div class="numero"></div> <!-- Adicionado o número de telefone -->
+    <div class="loader"></div>
+    <div class="connected">
+        <div class="d-flex justify-content-center">
+            <span class="text-success font-weight-bold pt-2">CONECTADO</span>
+            <span>
+                <svg height="35" viewBox="0 0 100 100" width="35">
+                    <circle cx="28" cy="75" fill="#00FF00" r="11">
+                        <animate attributeName="fill-opacity" begin="0s" dur="1" repeatCount="indefinite" values="0;1;1"></animate>
+                    </circle>
+                    <path d="M28 47A28 28 0 0 1 56 75" fill="none" stroke="#00FF00" stroke-width="10">
+                        <animate attributeName="stroke-opacity" begin="0.1s" dur="1" repeatCount="indefinite" values="0;1;1"></animate>
+                    </path>
+                    <path d="M28 25A50 50 0 0 1 78 75" fill="none" stroke="#6c757d" stroke-width="10">
+                        <animate attributeName="stroke-opacity" begin="0.2s" dur="1" repeatCount="indefinite" values="0;1;1"></animate>
+                    </path>
+                </svg>
+            </span>
         </div>
     </div>
-      <!-- mensagens abaixo -->
-
-  
-    <div class="r container bg-light text-dark text-left" style="height: 400px; overflow-y: auto; animation-fill-mode: both; animation-duration: 1000ms; animation-delay: 0ms; animation-iteration-count: 1; opacity: 1; animation-name: r-851776108488582-2;">
-        <div class="message">
-            <div class="d-flex">
-                <img src="https://i.pinimg.com/564x/08/dd/c0/08ddc0e0d7fb41925127fc8b6e5ad1e4.jpg" class="rounded-circle">
-                <div class="content">
-                    <div class="name">Vitor</div>
-                    <div class="text">
-                        <span class="text-primary">
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                        </span>
-                        Oi tudo bem?...❤️️
-                    </div>
-                </div>
-            </div>
-          <div class="small "><div style="color: rgb(3, 213, 98);"><div>00:47</div></div><div class="d-flex justify-content-center mt-1"><div class=" ml-2 font-weight-bold" style="color: rgb(255, 255, 255); background-color: rgb(3, 213, 98); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">6</div></div></div>
-        </div>
-        <div class="message">
-            <div class="d-flex">
-                <img src="https://i.ibb.co/3YGhRX0/Annalisa-Santi-14.jpg" class="rounded-circle">
-                <div class="content">
-                    <div class="name">Livia</div>
-                    <div class="text">
-                        <span class="text-secondary">
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                        </span>
-                        Me hubieras marcado ...
-                    </div>
-                </div>
-            </div>
-            <div class="time">20:00</div>
-        </div>
-      <div class="message">
-            <div class="d-flex">
-                <img src="https://i.ibb.co/njZMtnv/20220924-133553-4e6b4f9165bcb59c5e5e.jpg" class="rounded-circle">
-                <div class="content">
-                    <div class="name">Rodrígo</div>
-                    <div class="text">
-                        <span class="text-secondary">
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                        </span>
-                        Me hubieras marcado ...
-                    </div>
-                </div>
-            </div>
-            <div class="time">20:00</div>
-        </div>
-      <div class="message">
-            <div class="d-flex">
-                <img src="https://i.ibb.co/94T0Pmh/artworks-9-Dtb-C2-PLX6-R7y-QEj-2-R0ypw-t500x500.jpg" class="rounded-circle">
-                <div class="content">
-                    <div class="name">Bruno</div>
-                    <div class="text">
-                        <span class="text-secondary">
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                        </span>
-                        🎥 Video (0:18)...
-                    </div>
-                </div>
-            </div>
-<div class="small "><div style="color: rgb(3, 213, 98);"><div>00:47</div></div><div class="d-flex justify-content-center mt-1"><div class=" ml-2 font-weight-bold" style="color: rgb(255, 255, 255); background-color: rgb(3, 213, 98); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">6</div></div></div>        </div>
-      <div class="message">
-            <div class="d-flex">
-                <img src="https://i.ibb.co/V2qZjYL/a-SSAsdfdsulo-1-c5ad9a9e648d643025d1.jpg" class="rounded-circle">
-                <div class="content">
-                    <div class="name">Segredo</div>
-                    <div class="text">
-                        <span class="text-secondary">
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                        </span>
-                        Qual Motel? ;🔥😈
-🔥
-
-                    </div>
-                </div>
-            </div>
-        <div class="small "><div style="color: rgb(3, 213, 98);"><div>00:47</div></div><div class="d-flex justify-content-center mt-1"><div class=" ml-2 font-weight-bold" style="color: rgb(255, 255, 255); background-color: rgb(3, 213, 98); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">6</div></div></div>
-        </div>
-        <div class="message">
-            <div class="d-flex">
-                <img src="https://i.pinimg.com/originals/79/5f/df/795fdf055c886e996b4a31c13c30db44.png" class="rounded-circle">
-                <div class="content">
-                    <div class="name">Vivo</div>
-                    <div class="text">Os clientes ...</div>
-                </div>
-            </div>
-            <div class="time">00:47</div>
-        </div>
-        <div class="message">
-            <div class="d-flex">
-                <img src="https://i.ibb.co/GCtmg2h/347629678-257127013508422-6308811154833962194-n-e12d771c98b17c64b0c1.jpg" class="rounded-circle">
-                <div class="content">
-                    <div class="name">Diego</div>
-                    <div class="text">
-                        <span class="text-primary">
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                        </span>
-                        oi tudo bem?...
-                    </div>
-                </div>
-            </div>
-            <div class="time">21:42</div>
-        </div>
-        <div class="message">
-            <div class="d-flex">
-                <img src="https://i.ibb.co/7pWC6ct/IMG-20210728-WA0029-1dd764813060c0852fdd.jpg" class="rounded-circle">
-                <div class="content">
-                    <div class="name">Rubio Díaz</div>
-                    <div class="text">
-                        <span class="text-primary">
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                        </span>
-                        🎥 Video (0:18)...
-                    </div>
-                </div>
-            </div>
-            <div class="time">21:51</div>
-        </div>
-    </div>
-          <!-- Repita o bloco acima para cada item na lista, adaptando os dados conforme necessário -->
-
-  
-
-
-
-    <!-- Adicione links para os arquivos JavaScript do Bootstrap e jQuery -->
-    
-
-
-
-</body></html>
+</body>
+</html>
